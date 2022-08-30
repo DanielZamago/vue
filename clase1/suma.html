@@ -9,16 +9,22 @@
 </head>
 <body>
     <div id="contenedor">
-
-        <h1>
-            {{ name }}
-        </h1>
+        <label >Valor 1: </label>
+        <input type="text" v-model="valor1" name="">
+        <br><br>
+        <label >Valor 2: </label>
+        <input type="text" v-model="valor2" name="">
+        <br><br>
+        <button @click="suma" >
+            Sumar
+        </button>
         
-        <h2>
-            {{ lastname }}
-        </h2>
+        <h1>
+            {{ resultado }}
+        </h1>
 
-        <input type="text" v-model="name" name="">
+        <hr>
+
 
     </div>
 
@@ -30,8 +36,15 @@
         var app = createApp({
             data(){
                 return {
-                    name:'Daniel Zamago',
-                    lastname: 'Zamago'
+                    valor1: '',
+                    valor2: '',
+                    resultado:'Suma: '
+                }
+            },
+            methods : {
+                suma(){
+                    
+                    this.resultado='Suma: '+(parseFloat(this.valor1)+parseFloat(this.valor2));
                 }
             }
         }).mount('#contenedor')
