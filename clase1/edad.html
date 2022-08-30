@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VueJS</title>
+    <script src="https://unpkg.com/vue@3"></script>
+</head>
+<body>
+    <div id="contenedor">
+
+        <input type="text" v-model="age" name="">
+
+        <h1 v-if="age < 18">
+            No pase
+        </h1>
+
+        <h1 v-else>
+            Pase
+        </h1>
+
+        <hr><br>
+        <ol>
+            <li v-for="chamaco in chamacos">
+                {{ chamaco.name }} : <span> {{chamaco.role}} </span>
+            </li>
+        </ol>
+
+        <input type="text" v-model="chamaco_name" name="">
+        <br><br>
+        <input type="text" v-model="rol" name="">
+        <br><br>
+        <button @click="save" >
+            Agregar
+        </button>
+
+
+    </div>
+
+    <script type="text/javascript">
+        //Vincular vue con el contenedor
+        const {createApp} = Vue;
+
+        var app = createApp({
+            data(){
+                return {
+                    age: '',
+                    chamacos: [
+                    {name:'Iran', role:'Front'},
+                    {name:'Daniel', role:'Sin rol'},
+                    {name:'Diego', role:'Back'}],
+                    chamaco_name: '',
+                    rol: ''
+                }
+            },methods : {
+                save(){
+                    this.chamacos.push({name:this.chamaco_name, role:this.rol})
+                }
+            }
+        }).mount('#contenedor')
+    </script>
+</body>
+</html>
