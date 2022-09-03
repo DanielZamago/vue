@@ -6,33 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VueJS</title>
     <script src="https://unpkg.com/vue@3"></script>
+     <!-- Compiled and minified CSS -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+     <!-- Compiled and minified JavaScript -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </head>
 <body>
     <div id="contenedor" v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }">
 
-    <form action="">
-        <fieldset>
+    <div class="container">
+        <form action="">
+            <fieldset>
 
-            <legend>
-                Acceso al panel
-            </legend>
-
-            <label>
-                Correo Electrónico 
-            </label>
-            <input type="email" v-model="email">
-            <br><br>
-            <label for="">
-                Password
-            </label>
-            <input type="password" v-model="password">
-            <br><br>
-            <button @click="login">
-                Acceder
-            </button>
-
-        </fieldset>
-    </form>
+                <legend class="flow-text">
+                    Acceso al panel
+                </legend>
+                <div class="container">
+                    
+                    <label class="">
+                        Correo electrónico 
+                    </label>
+                    <input type="email" v-model="email">
+                    <br><br>
+                    <label for="">
+                        Password
+                    </label>
+                    <input type="password" v-model="password">
+                    <br><br>
+                    <button @click="login" class="btn waves-effect waves-light">
+                        Acceder
+                    </button>
+                </div>
+    
+            </fieldset>
+        </form>
+    </div>
 
     </div>
 
@@ -45,23 +54,25 @@
                     users:null,
                     email: '',
                     password:'',
+                    name: '',
                 }
             },methods : {
                 login(e){
                     e.preventDefault();
 
-                    var email_user = this.email
+                    var email_user = this.email.toLowerCase()
                     var password_user = this.password
                     var acceso = false
 
                     var access = this.users.map(function(u){
-                        if(email_user.toLowerCase() === u.email.toLowerCase()){
+                        if(email_user === u.email.toLowerCase()){
                             if(password_user === u.password){
                                 acceso=true;
-                                
+
+                                //acceder directamente al localstorage
+                                localStorage.setItem('name', u.name);
                                 window.location="dashboard.html"
-                                
-                                //localstorage 
+
                             }
                         }
                     })
@@ -83,7 +94,7 @@
             watch: {
                 email(newEmail) {
                     localStorage.email = newEmail;
-                }
+                },
             }
 
         }).mount('#contenedor')
