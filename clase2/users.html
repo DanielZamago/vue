@@ -20,12 +20,12 @@
             <label for="">
                 Correo Electrónico
             </label>
-            <input type="email" v-model="email" name="">
+            <input type="email" v-model="email">
             <br><br>
             <label for="">
                 Password
             </label>
-            <input type="password" v-model="password" name="">
+            <input type="password" v-model="password">
             <br><br>
             <button @click="login">
                 Acceder
@@ -52,17 +52,22 @@
 
                     var email_user = this.email
                     var password_user = this.password
+                    var acceso = false
 
                     var access = this.users.map(function(u){
                         if(email_user.toLowerCase() === u.email.toLowerCase()){
                             if(password_user === u.password){
-                                alert('acceso permitido')
-                                return true;
+                                acceso=true;
+                                
+                                window.location="dashboard.html"
+                                
                                 //localstorage 
                             }
                         }
                     })
-                    alert('acceso denegado')
+                    if(!acceso){
+                        alert('acceso denegado')
+                    }
                     console.log(access)
                 }
             },

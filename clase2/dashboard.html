@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://unpkg.com/vue@3"></script>
+</head>
+<body>
+    <div id="contenedor">
+
+    <form action="">
+        <fieldset>
+
+            <legend>
+                Dashboard
+            </legend>
+            
+            <button @click="logout">
+                cerrar sesion
+            </button>
+
+        </fieldset>
+    </form>
+
+    </div>
+
+    <script type="text/javascript">
+        const {createApp} = Vue;
+        
+        var app = createApp({
+            data(){
+                return {
+                    users:null,
+                    email: '',
+                    password:'',
+                }
+            },methods : {
+                logout(e){
+                    e.preventDefault();
+                    console.log('salir')
+                    window.location="users.html"
+                }
+            },
+            mounted(){
+                fetch('users.json')
+                .then((res) => res.json())
+                .then((json) => (this.users = json))
+                .catch((err) => (console.log(err)))
+            }
+
+        }).mount('#contenedor')
+    </script>
+</body>
+</html>
