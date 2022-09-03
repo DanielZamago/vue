@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/vue@3"></script>
 </head>
 <body>
-    <div id="contenedor">
+    <div id="contenedor" v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }">
 
     <form action="">
         <fieldset>
@@ -17,8 +17,8 @@
                 Acceso al panel
             </legend>
 
-            <label for="">
-                Correo Electrónico
+            <label>
+                Correo Electrónico 
             </label>
             <input type="email" v-model="email">
             <br><br>
@@ -72,10 +72,18 @@
                 }
             },
             mounted(){
+                if (localStorage.email) {
+                    this.email = localStorage.email;
+                }
                 fetch('users.json')
                 .then((res) => res.json())
                 .then((json) => (this.users = json))
                 .catch((err) => (console.log(err)))
+            },
+            watch: {
+                email(newEmail) {
+                    localStorage.email = newEmail;
+                }
             }
 
         }).mount('#contenedor')

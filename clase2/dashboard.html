@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/vue@3"></script>
 </head>
 <body>
-    <div id="contenedor">
+    <div id="contenedor"> 
 
     <form action="">
         <fieldset>
@@ -17,6 +17,26 @@
                 Dashboard
             </legend>
             
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                   
+                    <tr v-for="user in users">
+                        <td> {{ user.id }} </td> 
+                        <td> {{user.name}} </td>
+                        <td> {{user.email}} </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+
             <button @click="logout">
                 cerrar sesion
             </button>
@@ -39,9 +59,9 @@
             },methods : {
                 logout(e){
                     e.preventDefault();
-                    console.log('salir')
+                    localStorage.removeItem('email');
                     window.location="users.html"
-                }
+                },
             },
             mounted(){
                 fetch('users.json')
