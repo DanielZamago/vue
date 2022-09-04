@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <script src="https://unpkg.com/vue@3"></script>
+     <!-- Compiled and minified CSS -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+     <!-- Compiled and minified JavaScript -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body>
+    <div id="contenedor" v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }">
+
+    <div class="container">
+        <form class="col s12">
+            <fieldset>
+
+                <legend class="flow-text">
+                    Registrar nuevo usuario
+                </legend>
+                <div class="container">
+                    
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input id="name" type="text" v-model="name" class="validate">
+                            <label for="name">Nombre(s)</label>
+                        </div>
+                        <div class="input-field col s6">
+                          <input id="last_name" type="text" v-model="last_name" class="validate">
+                          <label for="last_name">Apellido(s)</label>
+                        </div>
+                    </div>
+                    <label class="">
+                        Nombre de usuario
+                    </label>
+                    <input type="text" v-model="username">
+                    <label class="">
+                        Correo electrónico 
+                    </label>
+                    <input type="email" v-model="new_email">
+                    <br><br>
+                    <label for="">
+                        Contraseña
+                    </label>
+                    <input type="password" v-model="password">
+                    <br><br>
+                    <button @click="save" class="btn waves-effect waves-light">
+                        Guardar los cambios
+                    </button>
+                </div>
+    
+            </fieldset>
+        </form>
+    </div>
+
+    </div>
+
+    <script type="text/javascript">
+        const {createApp} = Vue;
+        
+        var app = createApp({
+            data(){
+                return {
+                    users:null,
+                    id: 1,
+                    name:'',
+                    last_name:'',
+                    username:'',
+                    new_email: '',
+                    password:'',
+                    address: '',
+                    phone: '',
+                    website:'',
+                    company:'',
+                    nameAuth: '',
+                }
+            },methods : {
+                save(e){
+                    e.preventDefault();
+                    var usuarioDuplicado = false;
+                    var id = this.id
+                    var new_email = this.new_email
+
+                    var access = this.users.map(function(u){
+                        if(u.email.toLowerCase() === new_email){
+                            alert('Este correo ya esta asociado a una cuenta.');
+                            usuarioDuplicado = true;
+                        }
+                        id+=1;
+                    })
+                    
+                    if (usuarioDuplicado==false){
+                        var new_json = {id:id, 
+                            name:this.name + ' ' + this.last_name, 
+                            username:this.username, 
+                            password:this.password,
+                            email: this.new_email
+                        }
+
+                        console.log(new_json);
+                        localStorage.setItem("new_user", JSON.stringify(new_json));
+                        window.location="dashboard.html"
+                    
+                    }
+                    
+
+                }
+            },
+            mounted(){
+                fetch('users.json')
+                .then((res) => res.json())
+                .then((json) => (this.users = json))
+                .catch((err) => (console.log(err)))
+            },
+            watch: {
+                email(newEmail) {
+                    localStorage.email = newEmail;
+                },
+            }
+
+        }).mount('#contenedor')
+    </script>
+</body>
+</html>

@@ -19,13 +19,13 @@
                 <fieldset>
 
                     <legend class="flow-text">
-                        Dashboard
+                        Lista de usuarios
                     </legend>
         
                     <div class="container">
                         
                         <p class="flow-text">
-                            Bienvenido: {{name}}
+                            Bienvenido: {{nameAuth}}
                         </p>
         
                         <button @click="logout" class="waves-effect waves-light btn-small color-red">
@@ -50,13 +50,27 @@
                                
                                 <tr v-for="user in users">
                                     <td> {{ user.id }} </td> 
-                                    <td> {{user.name}} </td>
-                                    <td> {{user.username}} </td>
-                                    <td> {{user.email}} </td>
+                                    <td> {{ user.name }} </td>
+                                    <td> {{ user.username }} </td>
+                                    <td> {{ user.email }} </td>
                                 </tr>
+                                <tr v-if="new_user != null">
+                                    <td> {{ new_user.id }} </td> 
+                                    <td> {{ new_user.name }} </td>
+                                    <td> {{ new_user.username }} </td>
+                                    <td> {{ new_user.email }} </td>
+                                </tr>
+
                                 
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="container">
+                        <br><br>
+                        <button @click="register" class="btn waves-effect waves-light">
+                            Registrar nuevo usuario
+                        </button>
                     </div>
                     
                 </fieldset>
@@ -73,7 +87,8 @@
                     users:null,
                     email: '',
                     password:'',
-                    name: localStorage.getItem('name')
+                    nameAuth: localStorage.getItem('name'),
+                    new_user: JSON.parse(localStorage.getItem('new_user')),
                 }
             },methods : {
                 logout(e){
@@ -83,6 +98,11 @@
                     localStorage.removeItem('email');
                     localStorage.removeItem('name');
                     window.location="users.html"
+                },
+                register(e){
+                    e.preventDefault();
+
+                    window.location="registrar.html"
                 },
             },
             mounted(){
