@@ -11,6 +11,9 @@
 
      <!-- Compiled and minified JavaScript -->
      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+     <!-- Alertas -->
+     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 <body>
     <div id="contenedor" v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }">
@@ -76,7 +79,7 @@
                         }
                     })
                     if(!acceso){
-                        alert('acceso denegado')
+                        swal("Error!", "Usuario o contraseña incorrecta!", "error");
                     }
                     console.log(access)
                 }
