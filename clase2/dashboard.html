@@ -48,6 +48,7 @@
                                 <th>Correo</th>
                                 <th>Telefono</th>
                                 <th>Página web</th>
+                                <th>Dirección</th>
                             </tr>
                         </thead>
                         
@@ -60,6 +61,13 @@
                                 <td> {{ user.email }} </td>
                                 <td> {{ user.phone }} </td>
                                 <td> {{ user.website }} </td>
+                                <td>
+                                    <ul>
+                                        <li> {{ user.address.street }} </li>
+                                        <li> {{ user.address.city }} </li>
+                                        <li> {{ user.address.zipcode }} </li>
+                                    </ul>
+                                </td>
                                 <td>
                                     <button @click="action('editar', user)" class="waves-effect waves-light btn-small">
                                         Editar
@@ -87,12 +95,12 @@
                             </p>
                             <div class="row">
                                 <div class="col s6">
-                                    <label for="name">Nombre(s)</label>
-                                    <input id="name" type="text" v-model="name" class="validate">
+                                    <label for="name" >Nombre(s)</label>
+                                    <input id="name" type="text" v-model="name" >
                                 </div>
                                 <div class="col s6">
                                     <label for="last_name">Apellido(s)</label>
-                                    <input id="last_name" type="text" v-model="last_name" class="validate">
+                                    <input id="last_name" type="text" v-model="last_name" >
                                 </div>
                             </div>
                         </div>
@@ -118,6 +126,18 @@
                             Página web
                         </label>
                         <input type="text" v-model="website">
+                        <label>
+                            Calle
+                        </label>
+                        <input id="street" type="text" v-model="street">
+                        <label>
+                            Ciudad
+                        </label>
+                        <input id="city" type="text" v-model="city">
+                        <label>
+                            Codigo postal
+                        </label>
+                        <input id="zipcode" type="text" v-model="zipcode" >
                         <br><br>
                         <br><br>
                         <button @click="save" class="btn waves-effect waves-light">
@@ -151,6 +171,10 @@
                     password:'',
                     phone: '',
                     website:'',
+                    address: '',
+                    street:'',
+                    city:'',
+                    zipcode:''
                 }
             },methods : {
                 logout(e){
@@ -170,6 +194,10 @@
                         this.password=''
                         this.phone=''
                         this.website=''
+                        this.address=''
+                        this.street=''
+                        this.city=''
+                        this.zipcode=''
                         this.inAction='agregar';
                         console.log(this.inAction)
                     }
@@ -181,6 +209,9 @@
                         this.password=u.password
                         this.phone=u.phone
                         this.website=u.website
+                        this.street=u.address.street
+                        this.city=u.address.city
+                        this.zipcode=u.address.zipcode
                         this.inAction='editar';
                     }
                 },
@@ -202,6 +233,7 @@
                 },
                 save(e){
                     e.preventDefault();
+                    
                     var usuarioDuplicado = false;
                     var id = this.id
                     var new_email = this.new_email
@@ -217,43 +249,53 @@
                     
                     
                     if (usuarioDuplicado==false){
-                        if(this.inAction!='editar' && (this.name == '' || this.last_name == '' || this.username == '' || this.password == '' || this.new_email == '')){
-                            swal("Advertencia!", "Tienes que llenar todos los campos!", "warning");
-                        }else{
-                            if(this.inAction=='editar'){
-                                var id_aux = this.id;
-                                var name_aux = this.name
-                                var username_aux = this.username
-                                var new_email_aux = this.new_email
-                                var password_aux = this.password
-                                var phone_aux = this.phone
-                                var website_aux = this.website
+                        
+                        if(this.inAction=='editar'){
+                            var name_aux = this.name
+                            var username_aux = this.username
+                            var new_email_aux = this.new_email
+                            var password_aux = this.password
+                            var phone_aux = this.phone
+                            var website_aux = this.website
+                            var address_aux = this.address
+                            var street_aux = this.street
+                            var city_aux = this.city
+                            var zipcode_aux = this.zipcode
 
-                                var access = this.users.map(function(u){
-                                    if(id === u.id){
-                                        u.name = name_aux
-                                        u.username = username_aux
-                                        u.email = new_email_aux
-                                        u.password = password_aux
-                                        u.phone = phone_aux
-                                        u.website = website_aux
-                                    }
-                                })
-                                swal("Datos actualizados!", "Presiona 'OK' para continuar!", "success");
-                            }else{
-                                var new_user = {id:id, 
-                                    name:this.name + ' ' + this.last_name, 
-                                    username:this.username, 
-                                    password:this.password,
-                                    email: this.new_email,
-                                    phone: this.phone,
-                                    website: this.website
+                            var access = this.users.map(function(u){
+                                if(id === u.id){
+                                    u.name = name_aux
+                                    u.username = username_aux
+                                    u.email = new_email_aux
+                                    u.password = password_aux
+                                    u.phone = phone_aux
+                                    u.website = website_aux
+                                    u.address.street = street_aux
+                                    u.address.city = city_aux
+                                    u.address.zipcode = zipcode_aux 
                                 }
-                                this.users.push(new_user);
-                                swal("Registro existoso!", "Presiona 'OK' para continuar!", "success");
+                            })
+                            swal("Datos actualizados!", "Presiona 'OK' para continuar!", "success");
+                        }else{
+                            var new_user = {id:id, 
+                                name:this.name + ' ' + this.last_name, 
+                                username:this.username, 
+                                password:this.password,
+                                email: this.new_email,
+                                phone: this.phone,
+                                website: this.website,
+                                address: {
+                                    street: this.street,
+                                    city: this.city,
+                                    zipcode: this.zipcode
+                                }
                             }
-                            this.inAction='mostrarTabla'
+
+                            this.users.push(new_user);
+                            swal("Registro existoso!", "Presiona 'OK' para continuar!", "success");
                         }
+                        this.inAction='mostrarTabla'
+                        
                     }
                 }
             },
