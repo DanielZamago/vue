@@ -219,21 +219,34 @@
                     this.inAction = 'mostrarTabla';
                 },
                 remove(u){
-                    console.log('borrar');
-                    var id_aux = 0;
-                    for (let x = 0; x < this.users.length; x++) {
-                        if(u.id === this.users[x].id){
-                            break
+                    swal({
+                        title: "Esats seguro?",
+                        text: "No podras recuperar este usuario!",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                        })
+                        .then((willDelete) => {
+                        if (willDelete) {
+                            var id_aux = 0;
+                            for (let x = 0; x < this.users.length; x++) {
+                                if(u.id === this.users[x].id){
+                                    break
+                                }
+                                id_aux++;
+                                
+                            }
+                            this.users.splice(id_aux,1);
+                            swal("Usuario eliminado con exito!", "Presiona 'OK' para continuar!", "success");
+                        } else {
+                            cancel();
                         }
-                        id_aux++;
-                        
-                    }
-                    this.users.splice(id_aux,1);
-                    swal("Usuario eliminado con exito!", "Presiona 'OK' para continuar!", "success");
+                    });
+                    
                 },
                 save(e){
                     e.preventDefault();
-                    
+
                     var usuarioDuplicado = false;
                     var id = this.id
                     var new_email = this.new_email
