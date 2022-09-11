@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://unpkg.com/vue@3"></script>
+     <!-- Compiled and minified CSS -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+     <!-- Compiled and minified JavaScript -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+     <!-- Alertas -->
+     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="contenedor"> 
+        <div class="container">
+            <fieldset>
+                <legend class="flow-text">
+                    peliculas
+                </legend>
+                    
+                <div v-if="(inAction=='mostrarPeliculas')" class="container">
+                    <p class="flow-text">
+                        Bienvenido: {{email}}
+                    </p>
+                    
+                    <button @click="logout" class="red waves-effect waves-light btn-small">
+                        cerrar sesion
+                    </button>
+                    <br><br>
+                </div>
+        
+                <div class="container">
+                    <hr>
+                    <table v-if="(inAction=='mostrarPeliculas')" class="table striped centered bordered">
+                        <thead>
+                            <tr>
+                               <th>id</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+
+                            <div v-for="movie in movies">
+                                
+                                <div class="container">
+                                    <img v-bind:src="'https://www.themoviedb.org/t/p/w440_and_h660_face'+movie.poster_path" >
+                                    <div class="container">
+                                        {{movie.title}}
+                                        <div>
+                                            {{movie.release_date}}
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            
+                        </tbody>
+                    </table>
+            
+                    <form v-else action="">
+                       
+                    </form>
+                    <br>
+                    <hr>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+        const {createApp} = Vue;
+        
+        var app = createApp({
+            data(){
+                return {
+                    movies:{},
+                    users:null,
+                    inAction: 'mostrarPeliculas',
+                    email: localStorage.getItem('email').toUpperCase(),
+                }
+            },methods : {
+                logout(e){
+                    e.preventDefault();
+                    //borrar info del localStorage
+                    localStorage.removeItem('email');
+                    window.location="login.html"
+                },
+            },
+            mounted(){
+
+                var config = {
+                method: 'get',
+                url: 'https://api.themoviedb.org/3/movie/popular?&lenguaje=es-MX',
+                headers: { 
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmY2Y5OWFkOTVjZWY4YzA1ODdlYmRiNjBlNjhiODBlMSIsInN1YiI6IjYzMWEyMzdjNjJmY2QzMDA3Y2ZhZmUxNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.BXC43K6GbCbUbG0RIJWBs3uPCh-bgiRQh2KzAWyBXWQ'
+                }
+                };
+                
+                var self = this
+                axios(config)
+                .then(function (response) {
+                //console.log(JSON.stringify(response.data));
+                var json = JSON.stringify(response.data.results);
+                console.log(json);
+                var arregloAux = JSON.parse(json);
+                self.movies =  arregloAux
+                })
+                .catch(function (error) {
+                console.log(error);
+                });
+                
+            }
+
+        }).mount('#contenedor')
+    </script>
+</body>
+</html>
