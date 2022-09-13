@@ -44,6 +44,19 @@
         
                 <div class="container">
                     <hr>
+                    <div class="text-center" v-if="(inAction=='mostrarPeliculas')">
+                        <div class="row align-items-start">
+                            <div class="btn-group col-2" role="group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                 Genres
+                                </button>
+                                <ul class="dropdown-menu">
+                                  <li v-for="genres in genresList"><a class="dropdown-item" href="#">{{genres.name}}</a></li>
+                                </ul>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
                     <div v-if="(inAction=='mostrarPeliculas')" class="table striped centered bordered">
                         
                         <div class="row row-cols-2 row-cols-md-4 g-5">
@@ -144,6 +157,7 @@
                     movies:'',
                     movies_Aux:'',
                     movie:'',
+                    genresList:'',
                     valor:0,
                     lenguage:'',
                     users:null,
@@ -293,6 +307,7 @@
                 }
             },
             mounted(){
+                var self = this
 
                 var config = {
                 method: 'get',
@@ -302,7 +317,6 @@
                 }
                 };
                 
-                var self = this
                 axios(config)
                 .then(function (response) {
                 //console.log(JSON.stringify(response.data));
@@ -313,6 +327,26 @@
                 })
                 .catch(function (error) {
                 console.log(error);
+                });
+
+                var config = {
+                    method: 'get',
+                    url: 'https://api.themoviedb.org/3/genre/movie/list',
+                    headers: { 
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmY2Y5OWFkOTVjZWY4YzA1ODdlYmRiNjBlNjhiODBlMSIsInN1YiI6IjYzMWEyMzdjNjJmY2QzMDA3Y2ZhZmUxNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.BXC43K6GbCbUbG0RIJWBs3uPCh-bgiRQh2KzAWyBXWQ'
+                    }
+                };
+
+                axios(config)
+                .then(function (response) {
+                    console.log(JSON.stringify(response.data));
+                    var json = JSON.stringify(response.data.genres);
+                    var arregloAux = JSON.parse(json);
+                    self.genresList = arregloAux;
+                    console.log(self.genresList);
+                })
+                .catch(function (error) {
+                    console.log(error);
                 });
                 
             }
