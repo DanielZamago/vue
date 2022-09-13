@@ -16,34 +16,35 @@
         <div class="container">
             <fieldset>
                 <legend class="flow-text">
-                    peliculas
+                    Peliculas
                 </legend>
                     
                 <div v-if="(inAction=='mostrarPeliculas')" class="container">
-                    <p class="flow-text">
+                    <h5 class="flow-text">
                         Bienvenido: {{email}}
-                    </p>
+                    </h5>
                     
-                    <button @click="logout" class="red waves-effect waves-light btn-small">
+                    <button @click="logout" class="btn btn-danger">
                         cerrar sesion
                     </button>
-                    <br><br>
                 </div>
         
                 <div class="container">
                     <hr>
                     <div v-if="(inAction=='mostrarPeliculas')" class="table striped centered bordered">
                         
-                        <div class="row row-cols-1 row-cols-md-5 g-5">
+                        <div class="row row-cols-2 row-cols-md-4 g-5">
                             <div class="" v-for="movie in movies">
+
                                <a href="">
                                 <div class="card ">
-                                    <a href="" class="card">
+                                    <a @click="action('detalles', movie)" class="card">
                                         <img v-bind:src="'https://www.themoviedb.org/t/p/w440_and_h660_face'+movie.poster_path" class="" alt="">
                                     </a>
                                     <div class="card-body">
                                     <h5 class="card-title">{{movie.title}}</h5>
                                     <p class="card-text">{{movie.release_date}}</p>
+                                    <p class="card-text">Score: {{movie.vote_average}}</p>
                                     </div>
                                 </div>
                                </a>
@@ -53,11 +54,67 @@
                         
                     </div>
             
-                    <form v-else action="">
+                    <div v-else="(inAction=='detalles')" class="container">
+
+                        <div :style="backgroundDiv" >
+                            <div class="row align-items-start ">
+                                <div class="col-6">
+                                    <img v-bind:src="'https://www.themoviedb.org/t/p/w440_and_h660_face'+this.movie.poster_path" alt="">
+                                </div>
+                                <div class="col-4 text-aligt-left mt-5" style="color: white;">
+                                    <div>
+                                        <h5>{{this.movie.title}} ({{year}})</h5> 
+                                    </div>
+                                    <div>
+                                        <h5>User Score: {{movie.vote_average}}</h5>
+                                    </div>
+                                    <div>
+                                        <h5>Overview</h5>
+                                        <h6>{{this.movie.overview}}</h6>
+                                    </div>  
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="container">
+                                <div class="row">
+                                    <h5>Status</h5>
+                                    <h6>Released</h6>
+                                </div>
+                                <div class="row">
+                                    <h5>Original Lenguage</h5>
+                                    <h6>{{this.lenguage}}</h6>
+                                </div>
+                            </div>
+                            <div v-if="(inAction=='valorar')" class="container">
+                                <div class="row g-3 align-items-center mt-4">
+                                    <div class="col-auto">
+                                        <input v-model="valor" type="number" min="1" max="10" class="form-control">
+                                    </div>
+                                    <div class="col-auto">
+                                        <span class="form-text">
+                                            Valoraciones de 1 a 10.
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button v-if="(inAction=='valorar')" @click="value" class="btn btn-primary" >
+                                    Enviar valoracion
+                                </button>
+                                <button v-if="(inAction=='valorar')" @click="remove" class="btn btn-danger ms-3">
+                                    Eliminar valoracion
+                                </button>
+                                <button v-else @click="action('valorar', movie)" class="btn btn-primary" >
+                                    Valorar pelicula
+                                </button>
+                                <button @click="action('mostrarPeliculas', null)" class="btn btn-secondary ms-3">
+                                    Volver
+                                </button>
+                            </div>
+                        </div>
                        
-                    </form>
-                    <br>
-                    <hr>
+                    </div>
                 </div>
             </fieldset>
         </div>
@@ -69,10 +126,16 @@
         var app = createApp({
             data(){
                 return {
-                    movies:{},
+                    movies:'',
+                    movie:'',
+                    valor:0,
+                    lenguage:'',
                     users:null,
+                    year: '',
                     inAction: 'mostrarPeliculas',
                     email: localStorage.getItem('email').toUpperCase(),
+                    backgroundDiv : {
+                    },  
                 }
             },methods : {
                 logout(e){
@@ -81,6 +144,90 @@
                     localStorage.removeItem('email');
                     window.location="login.html"
                 },
+                action(a,m){
+                    if (a=='mostrarPeliculas') {
+                        this.inAction=a;
+
+                    }else if(a=='valorar'){
+                        this.inAction='valorar';
+                    }else{
+                        this.inAction='detalles';
+                        this.year = m.release_date.substring(0,4)
+                        this.movie=m;
+                        this.inAction=a;
+                        if(m.original_language==='en'){
+                            this.lenguage='English';
+                        }else if(m.original_language=='ja'){
+                            this.lenguage='Japanese';
+                        }else{
+                            this.lenguage='Italian';
+                        }
+                        this.backgroundDiv = {
+                            backgroundImage : 'url(https://www.themoviedb.org/t/p/w440_and_h660_face'+this.movie.backdrop_path+')',
+                            backgroundRepeat : 'no-repeat',
+                            backgroundSize : '100% 100%',
+                        }
+                    }
+                },
+                value(){
+                    console.log(this.movie.title);
+                    var config = {
+                        method: 'post',
+                        url: 'https://api.themoviedb.org/3/movie/'+this.movie.id+'/rating?value='+this.valor+'',
+                        headers: { 
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmY2Y5OWFkOTVjZWY4YzA1ODdlYmRiNjBlNjhiODBlMSIsInN1YiI6IjYzMWEyMzdjNjJmY2QzMDA3Y2ZhZmUxNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.BXC43K6GbCbUbG0RIJWBs3uPCh-bgiRQh2KzAWyBXWQ'
+                        }
+                    };
+                    
+                    this.valor=0;
+                    this.inAction='mostrarPeliculas'
+                    console.log(this.movie);
+                    axios(config)
+                    .then(function (response) {
+                        swal("Reseña enviada exitosamente!", "Presiona 'OK' para continuar!", "success");
+                        console.log(JSON.stringify(response.data));
+                    })
+                    .catch(function (error) {
+                        swal("Error al enviar la reseña!", "Presiona 'OK' para continuar!", "error");
+                        //console.log(error);
+                    });
+                },
+                remove(){
+                    var borrar = false;
+                    swal({
+                        title: "Estas seguro?",
+                        text: "La valoracion se perdera para siempre",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                        })
+                        .then((willDelete) => {
+                        if (willDelete) {
+                            borrar=true
+                            swal("Valoracion eliminada con exito!", "Presiona 'OK' para continuar!", "success");
+                            var config = {
+                                method: 'delete',
+                                url: 'https://api.themoviedb.org/3/movie/'+this.movie.id+'/rating',
+                                headers: { 
+                                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmY2Y5OWFkOTVjZWY4YzA1ODdlYmRiNjBlNjhiODBlMSIsInN1YiI6IjYzMWEyMzdjNjJmY2QzMDA3Y2ZhZmUxNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.BXC43K6GbCbUbG0RIJWBs3uPCh-bgiRQh2KzAWyBXWQ'
+                                }
+                            };
+        
+                            this.valor=0;
+                            this.inAction='mostrarPeliculas'
+                            axios(config)
+                            .then(function (response) {
+                                console.log(JSON.stringify(response.data));
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                            });
+                            
+                        } else {
+
+                        }
+                    });
+                }
             },
             mounted(){
 
