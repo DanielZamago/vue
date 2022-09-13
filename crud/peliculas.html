@@ -15,18 +15,31 @@
     <div id="contenedor"> 
         <div class="container">
             <fieldset>
-                <legend class="flow-text">
-                    Peliculas
-                </legend>
+                <h1 v-if="(userRating==false)">
+                    All Movies
+                </h1>
+
+                <h1 v-else>
+                    User Ratings
+                </h1>
                     
                 <div v-if="(inAction=='mostrarPeliculas')" class="container">
                     <h5 class="flow-text">
-                        Bienvenido: {{email}}
+                        Welcome: {{email}}
                     </h5>
                     
-                    <button @click="logout" class="btn btn-danger">
-                        cerrar sesion
+                    <button v-if="(userRating==true)" @click="action('mostrarPeliculas', null)" class="btn btn-secondary ms-3">
+                        Go Back
                     </button>
+
+                    <button v-else @click="ratings" class="btn btn-primary">
+                        User Ratings
+                    </button>
+
+                    <button @click="logout" class="btn btn-danger ms-4">
+                        Logout
+                    </button>
+
                 </div>
         
                 <div class="container">
@@ -93,23 +106,23 @@
                                     </div>
                                     <div class="col-auto">
                                         <span class="form-text">
-                                            Valoraciones de 1 a 10.
+                                            Only ratings from 1 to 10.
                                         </span>
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-4">
                                 <button v-if="(inAction=='valorar')" @click="value" class="btn btn-primary" >
-                                    Enviar valoracion
+                                    Sent Score
                                 </button>
                                 <button v-if="(inAction=='valorar')" @click="remove" class="btn btn-danger ms-3">
-                                    Eliminar valoracion
+                                    Delete Score
                                 </button>
                                 <button v-else @click="action('valorar', movie)" class="btn btn-primary" >
-                                    Valorar pelicula
+                                    User Score
                                 </button>
                                 <button @click="action('mostrarPeliculas', null)" class="btn btn-secondary ms-3">
-                                    Volver
+                                    Go Back
                                 </button>
                             </div>
                         </div>
@@ -126,7 +139,10 @@
         var app = createApp({
             data(){
                 return {
+                    account:'',
+                    userRating:false,
                     movies:'',
+                    movies_Aux:'',
                     movie:'',
                     valor:0,
                     lenguage:'',
@@ -147,11 +163,15 @@
                 action(a,m){
                     if (a=='mostrarPeliculas') {
                         this.inAction=a;
+                        if(this.userRating==true){
+                            this.movies=this.movies_Aux
+                        }
+                        this.userRating=false;
 
                     }else if(a=='valorar'){
-                        this.inAction='valorar';
+                        this.inAction=a;
                     }else{
-                        this.inAction='detalles';
+                        this.inAction=a;
                         this.year = m.release_date.substring(0,4)
                         this.movie=m;
                         this.inAction=a;
@@ -181,7 +201,6 @@
                     
                     this.valor=0;
                     this.inAction='mostrarPeliculas'
-                    console.log(this.movie);
                     axios(config)
                     .then(function (response) {
                         swal("Reseña enviada exitosamente!", "Presiona 'OK' para continuar!", "success");
@@ -190,6 +209,50 @@
                     .catch(function (error) {
                         swal("Error al enviar la reseña!", "Presiona 'OK' para continuar!", "error");
                         //console.log(error);
+                    });
+                },
+                ratings(){
+                    this.userRating=true
+                    this.movies_Aux=this.movies;
+                    var self = this;
+
+                    var config = {
+                        method: 'get',
+                        url: 'https://api.themoviedb.org/3/account',
+                        headers: { 
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmY2Y5OWFkOTVjZWY4YzA1ODdlYmRiNjBlNjhiODBlMSIsInN1YiI6IjYzMWEyMzdjNjJmY2QzMDA3Y2ZhZmUxNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.BXC43K6GbCbUbG0RIJWBs3uPCh-bgiRQh2KzAWyBXWQ'
+                        }
+                    };
+                    
+                    axios(config)
+                    .then(function (response) {
+                        var json = JSON.stringify(response.data);
+                        var arregloAux = JSON.parse(json);
+                        self.account= arregloAux;
+                        console.log(self.account.id);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+
+                    var config = {
+                        method: 'get',
+                        url: 'https://api.themoviedb.org/3/account/'+this.account.id+'/rated/movies',
+                        headers: { 
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmY2Y5OWFkOTVjZWY4YzA1ODdlYmRiNjBlNjhiODBlMSIsInN1YiI6IjYzMWEyMzdjNjJmY2QzMDA3Y2ZhZmUxNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.BXC43K6GbCbUbG0RIJWBs3uPCh-bgiRQh2KzAWyBXWQ'
+                        }
+                    };
+
+                    axios(config)
+                    .then(function (response) {
+                        console.log(JSON.stringify(response.data));
+                        var json = JSON.stringify(response.data.results);
+                        console.log(json);
+                        var arregloAux = JSON.parse(json);
+                        self.movies =  arregloAux
+                    })
+                    .catch(function (error) {
+                        console.log(error);
                     });
                 },
                 remove(){
